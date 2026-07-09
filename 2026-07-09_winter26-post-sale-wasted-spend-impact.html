@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Winter 26 — Post-Sale Wasted Spend Impact</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  :root{
+    --navy:#12233b; --navy2:#1c3557; --ink:#1a2434; --muted:#5c6b80;
+    --line:#e5ebf2; --bg:#f5f7fb; --card:#ffffff;
+    --teal:#0f9d8f; --blue:#2f6fed; --amber:#e8a13a; --red:#d9534f;
+    --green:#3aa76d; --chip:#eef3fb;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    color:var(--ink);background:var(--bg);line-height:1.55;font-size:15px}
+  .wrap{max-width:1040px;margin:0 auto;padding:0 24px 64px}
+  header.hero{background:linear-gradient(135deg,var(--navy),var(--navy2));color:#fff;
+    padding:40px 24px 34px;margin-bottom:28px}
+  header.hero .inner{max-width:1040px;margin:0 auto}
+  .kicker{text-transform:uppercase;letter-spacing:.14em;font-size:12px;color:#9db4d6;font-weight:600}
+  h1{font-size:30px;margin:8px 0 6px;font-weight:700;letter-spacing:-.01em}
+  .sub{color:#c4d2e8;font-size:15px;max-width:760px}
+  h2{font-size:21px;margin:40px 0 4px;letter-spacing:-.01em}
+  h2 .tag{font-size:12px;font-weight:600;padding:3px 9px;border-radius:20px;vertical-align:middle;margin-left:10px}
+  .tag.g{background:#e7f0ff;color:var(--blue)}
+  .tag.m{background:#e6f6f3;color:var(--teal)}
+  h3{font-size:16px;margin:26px 0 8px}
+  p{margin:10px 0}
+  .lead{font-size:16px;color:var(--ink)}
+  .section-note{color:var(--muted);font-size:14px;margin-top:2px}
+  .cards{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:22px 0 6px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 16px 14px;
+    box-shadow:0 1px 2px rgba(20,35,59,.04)}
+  .card .lab{font-size:12px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.05em}
+  .card .val{font-size:26px;font-weight:700;margin-top:6px;letter-spacing:-.02em}
+  .card .val.red{color:var(--red)} .card .val.teal{color:var(--teal)} .card .val.amber{color:var(--amber)}
+  .card .foot{font-size:12.5px;color:var(--muted);margin-top:4px}
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px 22px;margin:18px 0;
+    box-shadow:0 1px 2px rgba(20,35,59,.04)}
+  .chart-box{position:relative;height:340px;margin:6px 0 2px}
+  .chart-box.tall{height:380px}
+  .caption{font-size:13px;color:var(--muted);margin-top:10px;border-top:1px solid var(--line);padding-top:10px}
+  table{width:100%;border-collapse:collapse;font-size:13.5px;margin:6px 0}
+  th,td{padding:9px 10px;text-align:right;border-bottom:1px solid var(--line)}
+  th:first-child,td:first-child{text-align:left}
+  thead th{background:#f2f6fc;color:var(--navy);font-weight:600;font-size:12.5px;text-transform:uppercase;letter-spacing:.03em}
+  tr.sale td{background:#fff7e9}
+  tr.post td{background:#fdeceb}
+  tbody tr:hover td{background:#f7fafe}
+  tr.sale:hover td{background:#fdf1d8}
+  tr.post:hover td{background:#fbe1df}
+  .pill{display:inline-block;font-size:11px;font-weight:700;padding:2px 7px;border-radius:20px}
+  .pill.sale{background:#fbe7c2;color:#8a5a10} .pill.post{background:#f7cfcd;color:#8f2b28}
+  .callout{border-left:4px solid var(--amber);background:#fffaf1;padding:14px 18px;border-radius:0 10px 10px 0;margin:16px 0}
+  .callout.red{border-color:var(--red);background:#fdf1f0}
+  .callout.teal{border-color:var(--teal);background:#f0faf8}
+  .callout b{color:var(--ink)}
+  ul.clean{margin:10px 0;padding-left:20px} ul.clean li{margin:7px 0}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  .updn{font-weight:700} .up{color:var(--red)} .dn{color:var(--green)}
+  footer{color:var(--muted);font-size:12.5px;margin-top:40px;border-top:1px solid var(--line);padding-top:16px}
+  @media (max-width:820px){.cards{grid-template-columns:repeat(2,1fr)}.two{grid-template-columns:1fr}}
+  @media print{body{background:#fff}.panel,.card{box-shadow:none}header.hero{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+</style>
+</head>
+<body>
+<header class="hero">
+  <div class="inner">
+    <div class="kicker">Code Camp · Paid Media · Winter 26</div>
+    <h1>The Post-Sale Wasted Spend Effect</h1>
+    <div class="sub">What happened to efficiency in the two weeks <em>after</em> the 15&nbsp;June sale ended — across Google Ads (all campaigns) and the Meta Conversions campaign. Season window 18&nbsp;May&nbsp;–&nbsp;8&nbsp;July&nbsp;2026.</div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <p class="lead">When a big sale ends, conversion rates fall back to normal almost overnight — but automated bidding and budgets don't. For a week or two the machines keep buying as if the sale-week conversion rate still held, so you pay well above target for each booking. This is the <b>post-sale overbidding</b> pattern. It cost Google Ads roughly <b>A$4,242</b> in Winter 26. On Meta the same directional dip appeared, but the dollar damage was far smaller once budget was trimmed.</p>
+
+  <div class="cards">
+    <div class="card"><div class="lab">Google wasted spend</div><div class="val red">A$4,242</div><div class="foot">2 post-sale weeks vs target CPA</div></div>
+    <div class="card"><div class="lab">Google cost / conv.</div><div class="val amber">+65%</div><div class="foot">A$19 baseline → A$31.6 (wk 29 Jun)</div></div>
+    <div class="card"><div class="lab">Meta cost / booking</div><div class="val amber">+45%</div><div class="foot">A$24.19 sale → A$35.08 (wk 22 Jun)</div></div>
+    <div class="card"><div class="lab">Meta excess vs A$33</div><div class="val teal">~A$237</div><div class="foot">wk 22 Jun; self-corrected wk 29 Jun</div></div>
+  </div>
+
+  <!-- ============ GOOGLE ============ -->
+  <h2>Google Ads <span class="tag g">Primary story · A$4,242</span></h2>
+  <div class="section-note">All campaigns excluding Demand Gen TOF. Weeks run Monday–Sunday.</div>
+
+  <p>The sale week (15&nbsp;Jun) did exactly what a sale should: conversion rate jumped to <b>9.0%</b> and spend scaled hard. The problem is what happened <b>next</b>. In the week of 22&nbsp;June, Smart Bidding held the cost-per-click at its season peak (<b>A$1.75</b>, actually the highest of the whole season) — but the conversion rate had already collapsed from 9.0% back to <b>5.9%</b>. Same expensive clicks, far fewer of them converting. Cost per conversion blew out from a ~A$19 baseline to <b>A$29.93</b>, then A$31.56 the following week.</p>
+
+  <div class="callout red">
+    <b>The mechanism, in one line:</b> post-sale, the bids stayed high while the conversion rate halved. Google kept paying sale-week prices for clicks that no longer converted like sale-week clicks.
+  </div>
+
+  <div class="panel">
+    <h3>Bids held at peak while conversion rate collapsed</h3>
+    <div class="chart-box tall"><canvas id="gChart"></canvas></div>
+    <div class="caption">Left axis: Avg. CPC and Cost / conversion (A$). Right axis: conversion rate (%). The shaded band marks the two post-sale weeks. Note CPC (blue) peaking exactly as CVR (green) craters — the signature of bid inflation.</div>
+  </div>
+
+  <div class="panel">
+    <h3>Weekly detail</h3>
+    <table>
+      <thead><tr><th>Week (Mon)</th><th>Spend</th><th>Conv.</th><th>Avg CPC</th><th>Conv. rate</th><th>Cost / conv.</th><th>Search IS</th></tr></thead>
+      <tbody id="gTable"></tbody>
+    </table>
+    <div class="caption">A subtle tell: Search impression share actually <em>fell</em> post-sale (31.4% → 23.8% → 21.3%). So the waste wasn't from buying <em>more</em> of the auction — it was from paying peak prices for a <em>shrinking</em> share of clicks that converted poorly.</div>
+  </div>
+
+  <div class="panel">
+    <h3>Where the A$4,242 leaked — by campaign</h3>
+    <div class="chart-box"><canvas id="gCampChart"></canvas></div>
+    <div class="caption">Excess spend = actual spend − (conversions delivered × target CPA), summed across both post-sale weeks. Generic Search and the Brand campaign lead; Coding&nbsp;All&nbsp;Camps and Online&nbsp;Camps stayed at/under target (green). <b>Note:</b> Brand's excess is volume-driven — it converts near A$9–12 vs a A$6 target, a small per-booking overshoot × large volume — not the 2–3× overbidding the generic search campaigns show.</div>
+  </div>
+
+  <!-- ============ META ============ -->
+  <h2>Meta — Conversions campaign <span class="tag m">Parallel effect · much milder</span></h2>
+  <div class="section-note">codecamp-winter26-conversions. Result = Website purchases (bookings). Benchmark = A$33 target cost per result.</div>
+
+  <p>The same <em>directional</em> dip is clearly there: the sale week (15&nbsp;Jun) was the campaign's most efficient of the season at <b>A$24.19</b> per booking with a booking rate of 5.2%, and the week after (22&nbsp;Jun) that reverted to <b>A$35.08</b> as the booking rate halved to 3.5% — all while spend was pushed to its season peak of ~A$4,000. That is the post-sale reversion.</p>
+
+  <p>But the mechanism differs from Google, and it matters. On Meta, <b>CPM and CPC actually eased</b> post-sale (CPM A$18.07 → A$16.06 → A$14.95) — there was no bid inflation. The cost-per-booking rise was almost entirely <b>conversion-rate decay</b>: sale-primed demand evaporating. And critically, measured against the A$33 target you hold the campaign to, the post-sale damage was small: about <b>A$237</b> of excess in the week of 22&nbsp;June, which then <b>self-corrected to under-target</b> the following week once budget was trimmed.</p>
+
+  <div class="callout teal">
+    <b>Honest read:</b> against the A$33 target, Meta's post-sale weeks weren't especially wasteful — the campaign came back under target by week 2. The larger over-target spend on Meta actually sat in the pre-sale <em>ramp</em> weeks (25&nbsp;May, 1&nbsp;Jun), not after the sale. Meta's post-sale exposure is an order of magnitude smaller than Google's.
+  </div>
+
+  <div class="two">
+    <div class="panel">
+      <h3>Cost per booking vs booking rate</h3>
+      <div class="chart-box"><canvas id="mChart"></canvas></div>
+      <div class="caption">Cost/booking (bars, A$) with the A$33 target line, against booking rate (line, %). The 22&nbsp;Jun reversion is visible but shallow.</div>
+    </div>
+    <div class="panel">
+      <h3>Excess vs A$33 target, by week</h3>
+      <div class="chart-box"><canvas id="mExcess"></canvas></div>
+      <div class="caption">Red = spend above target, green = below. Post-sale week 1 is modestly over; week 2 swings under. Note the ramp weeks carry more excess than the post-sale weeks.</div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h3>Weekly detail — Meta Conversions</h3>
+    <table>
+      <thead><tr><th>Week (Mon)</th><th>Spend</th><th>Bookings</th><th>Cost / booking</th><th>Booking rate</th><th>CPM</th><th>Excess vs A$33</th></tr></thead>
+      <tbody id="mTable"></tbody>
+    </table>
+    <div class="caption">Booking rate = Website purchases ÷ clicks. Excess = spend − (bookings × A$33).</div>
+  </div>
+
+  <!-- ============ TAKEAWAY ============ -->
+  <h2>What this means — and what to do next sale</h2>
+
+  <div class="panel">
+    <p class="lead">Two channels, one root cause, different severity.</p>
+    <ul class="clean">
+      <li><b>Google is where the money is lost.</b> ~A$4,242 over two weeks, concentrated in the generic Search and PMax campaigns, driven by bids that stayed at peak while conversion rate halved. This recurs after every big sale.</li>
+      <li><b>Meta reverted too, but held its target.</b> Cost per booking rose ~45% off the sale-week low, yet stayed close to the A$33 target and self-corrected by week 2 — because the lever there is budget, and budget was pulled back. No bid-inflation problem to fix.</li>
+      <li><b>The fix is pre-emptive, not reactive.</b> The waste happened in the days <em>before</em> anyone would normally react. Because the effect persisted ~2 weeks, acting one week early protects roughly double the single-week loss.</li>
+    </ul>
+
+    <div class="callout">
+      <b>Recommended play for the next sale:</b>
+      <ul class="clean" style="margin-bottom:0">
+        <li><b>Google:</b> tighten target CPAs (or trim daily budgets) on the generic Search and PMax campaigns <em>going into</em> the week after the sale ends — don't wait for cost/conversion to blow out. Brand can be left alone; its overshoot is volume, not bid inefficiency.</li>
+        <li><b>Meta:</b> step the Conversions budget down into the first post-sale week rather than holding it at sale-week peak. The week-2 correction shows this works; doing it a week earlier removes even the modest week-1 excess.</li>
+      </ul>
+    </div>
+  </div>
+
+  <footer>
+    Sources: Google Ads daily export (18 May – 8 July 2026) and <i>2026-07-09_winter26-google-budget-utilisation-v4.xlsx</i> (Efficiency Loss tab, campaign-level target-CPA method); Meta Ads — codecamp-winter26-conversions, daily campaign insights via connector. Google figures exclude Demand Gen TOF. Meta benchmark = A$33 target cost per result. Weeks Monday–Sunday; week of 6 July is partial (3 days). Prepared 9 July 2026.
+  </footer>
+</div>
+
+<script>
+const AUD = v => 'A$'+v.toLocaleString('en-AU',{maximumFractionDigits:0});
+const F = {responsive:true,maintainAspectRatio:false};
+const SALE='#e8a13a', POST='rgba(217,83,79,.10)';
+
+// post-sale shaded band plugin
+const band = (fromIdx,toIdx)=>({
+  id:'band'+fromIdx,
+  beforeDraw(c){
+    const {ctx,chartArea:{top,bottom},scales:{x}}=c;
+    if(!x)return;
+    const x1=x.getPixelForValue(fromIdx)-(x.getPixelForValue(1)-x.getPixelForValue(0))/2;
+    const x2=x.getPixelForValue(toIdx)+(x.getPixelForValue(1)-x.getPixelForValue(0))/2;
+    ctx.save();ctx.fillStyle=POST;ctx.fillRect(x1,top,x2-x1,bottom-top);ctx.restore();
+  }
+});
+
+// ---------- GOOGLE DATA ----------
+const gLabels=['18 May','25 May','1 Jun','8 Jun','15 Jun','22 Jun','29 Jun','6 Jul'];
+const gCost=[1123,3322,3436,4228,7115,8035,4810,509];
+const gConv=[107,162,174,230,375,268,152,30];
+const gCPC=[0.78,1.38,1.30,1.36,1.71,1.75,1.59,0.86];
+const gCVR=[7.47,6.72,6.56,7.38,9.02,5.86,5.05,5.03];
+const gCPA=[10.48,20.56,19.79,18.36,18.98,29.93,31.56,17.19];
+const gIS=[24.5,26.3,29.1,31.4,28.7,23.8,21.3,17.5];
+
+new Chart(document.getElementById('gChart'),{
+  data:{labels:gLabels,datasets:[
+    {type:'bar',label:'Cost / conv. (A$)',data:gCPA,backgroundColor:'#f0d9b5',borderColor:'#e8a13a',borderWidth:1,yAxisID:'y',order:3},
+    {type:'line',label:'Avg. CPC (A$)',data:gCPC,borderColor:'#2f6fed',backgroundColor:'#2f6fed',tension:.3,yAxisID:'y',pointRadius:3,order:1},
+    {type:'line',label:'Conv. rate (%)',data:gCVR,borderColor:'#3aa76d',backgroundColor:'#3aa76d',borderDash:[5,4],tension:.3,yAxisID:'y1',pointRadius:3,order:1}
+  ]},
+  options:{...F,plugins:{legend:{position:'top'},tooltip:{mode:'index',intersect:false}},
+    scales:{
+      y:{position:'left',title:{display:true,text:'A$'},grid:{color:'#eef2f7'}},
+      y1:{position:'right',title:{display:true,text:'Conv. rate %'},grid:{drawOnChartArea:false},min:0,max:10}
+    }},
+  plugins:[band(5,6)]
+});
+
+// google weekly table
+const gRows=gLabels.map((w,i)=>{
+  const cls=i===4?'sale':(i===5||i===6?'post':'');
+  const pill=i===4?'<span class="pill sale">SALE</span> ':(i===5||i===6?'<span class="pill post">POST</span> ':'');
+  return `<tr class="${cls}"><td>${pill}${w}</td><td>${AUD(gCost[i])}</td><td>${gConv[i]}</td><td>A$${gCPC[i].toFixed(2)}</td><td>${gCVR[i].toFixed(1)}%</td><td>A$${gCPA[i].toFixed(2)}</td><td>${gIS[i].toFixed(1)}%</td></tr>`;
+}).join('');
+document.getElementById('gTable').innerHTML=gRows;
+
+// google campaign excess (sum of both post-sale weeks, from workbook Efficiency Loss)
+const cLab=['Generic Holiday Prog.','Search – Brand','Coding – B','PMax – Generic','Mix Keywords','Generic Hol. – B','PMax – Sydney','Dynamic Search','Coding (All Camps)','Online Camps'];
+const cVal=[949,898,626,507,434,386,371,122,-46,-4];
+new Chart(document.getElementById('gCampChart'),{
+  type:'bar',
+  data:{labels:cLab,datasets:[{label:'Post-sale excess spend (A$)',data:cVal,
+    backgroundColor:cVal.map(v=>v>=0?'#d9534f':'#3aa76d'),borderRadius:4}]},
+  options:{...F,indexAxis:'y',plugins:{legend:{display:false},
+    tooltip:{callbacks:{label:c=>AUD(c.raw)}}},
+    scales:{x:{title:{display:true,text:'Excess spend vs target (A$)'},grid:{color:'#eef2f7'}}}}
+});
+
+// ---------- META DATA ----------
+const mLabels=['18 May','25 May','1 Jun','8 Jun','15 Jun','22 Jun','29 Jun','6 Jul'];
+const mSpend=[929,2085,2569,3298,3460,3999,2510,445];
+const mBook=[29,46,65,94,143,114,85,24];
+const mCPB=[32.03,45.33,39.53,35.09,24.19,35.08,29.52,18.54];
+const mCVR=[2.00,1.78,2.11,2.87,5.23,3.45,3.87,5.99];
+const mCPM=[15.17,15.25,17.20,19.73,18.07,16.06,14.95,13.34];
+const mExc=[-28,567,424,196,-1259,237,-295,-347];
+
+new Chart(document.getElementById('mChart'),{
+  data:{labels:mLabels,datasets:[
+    {type:'bar',label:'Cost / booking (A$)',data:mCPB,backgroundColor:'#bfe6df',borderColor:'#0f9d8f',borderWidth:1,yAxisID:'y',order:3},
+    {type:'line',label:'Booking rate (%)',data:mCVR,borderColor:'#12233b',backgroundColor:'#12233b',tension:.3,yAxisID:'y1',pointRadius:3,order:1},
+    {type:'line',label:'Target A$33',data:mLabels.map(()=>33),borderColor:'#d9534f',borderDash:[6,4],pointRadius:0,yAxisID:'y',order:2}
+  ]},
+  options:{...F,plugins:{legend:{position:'top'},tooltip:{mode:'index',intersect:false}},
+    scales:{y:{position:'left',title:{display:true,text:'A$ / booking'},grid:{color:'#eef2f7'},min:0},
+      y1:{position:'right',title:{display:true,text:'Booking rate %'},grid:{drawOnChartArea:false},min:0,max:7}}},
+  plugins:[band(5,6)]
+});
+
+new Chart(document.getElementById('mExcess'),{
+  type:'bar',
+  data:{labels:mLabels,datasets:[{label:'Excess vs A$33 (A$)',data:mExc,
+    backgroundColor:mExc.map(v=>v>=0?'#d9534f':'#3aa76d'),borderRadius:4}]},
+  options:{...F,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>AUD(c.raw)}}},
+    scales:{y:{title:{display:true,text:'A$'},grid:{color:'#eef2f7'}}},
+  },
+  plugins:[band(5,6)]
+});
+
+// meta weekly table
+const mRows=mLabels.map((w,i)=>{
+  const cls=i===4?'sale':(i===5||i===6?'post':'');
+  const pill=i===4?'<span class="pill sale">SALE</span> ':(i===5||i===6?'<span class="pill post">POST</span> ':'');
+  const ex=mExc[i], exTxt=(ex>=0?'+':'−')+'A$'+Math.abs(ex).toLocaleString('en-AU');
+  const exCls=ex>0?'up':'dn';
+  return `<tr class="${cls}"><td>${pill}${w}</td><td>${AUD(mSpend[i])}</td><td>${mBook[i]}</td><td>A$${mCPB[i].toFixed(2)}</td><td>${mCVR[i].toFixed(1)}%</td><td>A$${mCPM[i].toFixed(2)}</td><td class="updn ${exCls}">${exTxt}</td></tr>`;
+}).join('');
+document.getElementById('mTable').innerHTML=mRows;
+</script>
+</body>
+</html>
